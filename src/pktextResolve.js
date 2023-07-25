@@ -1,10 +1,8 @@
-import {weaponMap, armorMap, equipOldMap, haloMap, attrMap} from './namemap/oriToDb';
-import {getLocDate} from './dateUtil';
-import {user, db} from './global';
-import {get_user_theard} from './getUser';
 export {saveBattle};
+import {weaponMap, armorMap, equipOldMap, haloMap, attrMap} from './namemap/oriToDb';
+import {logupdate} from './db';
+import {get_user_theard} from './getUserSM';
 
-/* Global md5 */
 async function saveBattle() { //战斗记录
     let battleLog = {};
     let pkTextDiv = document.querySelector('#pk_text');
@@ -81,16 +79,4 @@ async function saveBattle() { //战斗记录
     await logupdate(battleLog);
     if(battleLog.echar=='野怪'){return;}
     get_user_theard(battleLog.enemyname);
-
 }
-
-async function logupdate(battleLog){
-    let now = getLocDate();
-    let thisid = md5(battleLog.etext);
-
-    await db.battleLog.add({id: thisid, username: user, log: battleLog.etext, isWin: battleLog.battleresult,
-        enemyname: battleLog.enemyname, char: battleLog.echar, charlevel: battleLog.echarlv, attrs: battleLog.attrs,
-        damages: battleLog.damages, halos: battleLog.halos, weapon: battleLog.weapon, armor: battleLog.armor,
-        invalids: battleLog.invalids, time:now});
-}
-

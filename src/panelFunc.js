@@ -1,6 +1,6 @@
-export {dosmalldiv, autodeletelog, download, table_date_set, banbattletypefunc, getDaysOfLog};
-import {db, user} from './global';
-import {getLocDate, getDateString} from './dateUtil';
+export {dosmalldiv, download, table_date_set, banbattletypefunc};
+import {getDateString} from './dateUtil';
+import {queryDuring} from './db';
 import {banpveFlag, banpvpFlag} from './config';
 
 /* global Chart */
@@ -40,20 +40,6 @@ function download(downfile,name) {
     tmpLink.download = name;
     tmpLink.click();
     URL.revokeObjectURL(objectUrl);
-}
-
-async function autodeletelog(dayss){
-    let during_s = dayss * 24 * 60 * 60 * 1000;
-    let now = getLocDate();
-    let old = new Date(now - during_s);
-    await db.battleLog.where('time').belowOrEqual(old).and(item => item.username == user).delete();
-}
-
-async function getDaysOfLog(){
-    let result = new Set();
-    await db.battleLog.where({username:user}).each(item => result.add(getDateString(item.time)));
-
-    return Array.from(result);
 }
 
 async function table_date_set(during,num){
@@ -136,12 +122,7 @@ async function table_date_set(during,num){
     });
 }
 async function count_battle(during){
-    let during_s = during * 24 * 60 * 60 * 1000;
-    let now = getLocDate();
-    let old = new Date(now - during_s);
-
-    let battlelog = await db.battleLog.where('time').between(old,now,true,true).and(item => item.username == user).toArray();
-
+    let battlelog = await queryDuring(during);
     let enemy_sum = {};
     for(let log of battlelog){
         let name = log.enemyname;

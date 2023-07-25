@@ -1,9 +1,10 @@
 export {initgoxpanel};
 import {getLocDate} from './dateUtil';
-import {table_date_set, dosmalldiv, autodeletelog, download, getDaysOfLog, banbattletypefunc} from './panelFunc';
-import {checkboxids, banpveFlag, banpvpFlag, config, setflashtime, saveConfig, setBanpvpFlag, setBanpveFlag} from './config';
-import {setRefreshCountdownTime, db, progresschange} from './global';
-import {showMainHost, setMainHost} from './getUser';
+import {table_date_set, dosmalldiv, download, banbattletypefunc} from './panelFunc';
+import {refreshMaxtime, checkboxids, banpveFlag, banpvpFlag, config, setflashtime, saveConfig, setBanpvpFlag, setBanpveFlag} from './config';
+import {setRefreshCountdownTime, progresschange} from './refresh';
+import {autodeletelog, getDaysOfLog, db} from './db';
+import {showMainHost, setMainHost} from './getUserSM';
 import {setDetaillogpanelByday, setDetaillogpanelByname,setDetaillogpanelBychar, setDetaillogpanelBynameRegex} from './makeDetail';
 
 let banbattletypediv= document.createElement('div');
@@ -64,8 +65,9 @@ async function initgoxpanel(){
     progresschange.style.setProperty('max-height','70%');
 
     $('#goxtiptext').click(() => {
-        let newtime = setflashtime();
-        if(newtime !== false){
+        let newtime = parseInt(prompt('新的刷新间隔：(填0则禁止刷新)',refreshMaxtime));
+        if(!isNaN(newtime)){
+            setflashtime(newtime);
             setRefreshCountdownTime(newtime);
         }
     });

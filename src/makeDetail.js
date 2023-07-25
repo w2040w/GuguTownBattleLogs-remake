@@ -1,9 +1,9 @@
-import {weaponAbbrMap, armorAbbrMap, attrsClassValid, attrName} from './namemap/dbToAbbr';
-import {db, user} from './global';
-import {get_enemylevel} from './getUser';
-import {config} from './config';
-import {getLocDate, getDateString} from './dateUtil';
 export {setDetaillogpanelByday, setDetaillogpanelByname, setDetaillogpanelBychar, setDetaillogpanelBynameRegex};
+import {weaponAbbrMap, armorAbbrMap, attrsClassValid, attrName} from './namemap/dbToAbbr';
+import {queryDay, queryCharname, queryEnemyname, queryEnemynameRegex} from './db';
+import {get_enemylevel} from './getUserSM';
+import {config} from './config';
+import {getDateString} from './dateUtil';
 
 async function setDetaillogpanelByday(key){
     let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
@@ -11,11 +11,7 @@ async function setDetaillogpanelByday(key){
             (config.showSM?'<span style="width: 70px;">{xishu}</span>':'')+
             (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
             '</h3></div><div style="display:none;">{log}</div></div>';
-
-    let during_s = 24 * 60 * 60 * 1000;
-    let day = getLocDate(key);
-    let day_ = new Date(day.getTime() + during_s);
-    let items = await db.battleLog.where('time').between(day,day_,true,false).and(item => item.username == user).sortBy('time');
+    let items = await queryDay(key);
     return setDetaillogpanel(divtext, items);
 }
 async function setDetaillogpanelByname(enemyname){
@@ -23,20 +19,15 @@ async function setDetaillogpanelByname(enemyname){
             '<span style="width: 100px;">{date}</span><span style="width: 120px;">{name}</span>'+
             (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
             '</h3></div><div style="display:none;">{log}</div></div>';
-    let items = await db.battleLog.where({username:user,enemyname:enemyname}).sortBy('time');
+    let items = await queryEnemyname(enemyname);
     return setDetaillogpanel(divtext, items);
 }
 async function setDetaillogpanelBynameRegex(enemynameRegex){
-    const queryLimit = 50;
     let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
             '<span style="width: 100px;">{date}</span><span style="width: 120px;">{name}</span>'+
             (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
             '</h3></div><div style="display:none;">{log}</div></div>';
-    let items = await db.battleLog.where({username:user}).and(item =>{
-        let reg = new RegExp(enemynameRegex, 'i');
-        return reg.test(item.enemyname);
-    }).limit(queryLimit).sortBy('time');
-
+    let items = await queryEnemynameRegex(enemynameRegex);
     return setDetaillogpanel(divtext, items);
 }
 async function setDetaillogpanelBychar(charname, maxQueryDay){
@@ -44,10 +35,7 @@ async function setDetaillogpanelBychar(charname, maxQueryDay){
             '<span style="width: 100px;">{monthday}  {time}</span><span style="width: 120px;">{name}</span>'+
             (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
             '</h3></div><div style="display:none;">{log}</div></div>';
-    let during_s = maxQueryDay * 24 * 60 * 60 * 1000;
-    let day_ = new Date();
-    let day = new Date(day_.getTime() - during_s);
-    let items = await db.battleLog.where('time').between(day,day_,true,false).and(item => item.char === charname).sortBy('time');
+    let items = await queryCharname(charname, maxQueryDay);
     return setDetaillogpanel(divtext, items);
 }
 
@@ -148,3 +136,7 @@ function makeDetaillogitem(divtext, item){
     return divtext.format(divLogData);
 }
 
+export let infunc;
+if (process.env.NODE_ENV === 'test') {
+    infunc = {strWhenBool, fillzero};
+}

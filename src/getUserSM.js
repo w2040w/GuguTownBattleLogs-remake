@@ -1,5 +1,5 @@
 export {BattleLog, get_enemylevel, get_user_theard, showMainHost, setMainHost, FM_setValue};
-import {user} from './global';
+import {user} from './db';
 
 /* global $URL */
 let mainHost = '0';

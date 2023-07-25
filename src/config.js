@@ -43,20 +43,17 @@ if(typeof config.queryMaxDay !== 'number'){
 
 let refreshMaxtime = 30;
 if(localStorage.getItem('flashtime')===null){
-    localStorage.setItem('flashtime',30 );
+    localStorage.setItem('flashtime', 30);
 }
 refreshMaxtime = parseInt(localStorage.getItem('flashtime'));
 
-function setflashtime(){
-    let newtime = parseInt(prompt('新的刷新间隔：(填0则禁止刷新)',refreshMaxtime));
-    if(!isNaN(newtime)&&newtime>0){
-        localStorage.setItem('flashtime',newtime );
+function setflashtime(newtime){
+    if(newtime > 0){
+        localStorage.setItem('flashtime', newtime);
         refreshMaxtime = newtime;
-        return newtime;
     }
-    if(!isNaN(newtime)&&newtime<=0){
-        localStorage.setItem('flashtime',newtime );
+    if(newtime <= 0){
+        localStorage.setItem('flashtime', newtime);
         refreshMaxtime = -1;
     }
-    return false;
 }
