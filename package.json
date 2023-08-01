@@ -11,6 +11,7 @@
     "eslint": "^8.45.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^27.2.3",
     "jest": "^29.6.1",
     "jquery": "^3.7.0",
     "jsdom": "^22.1.0",
@@ -18,13 +19,15 @@
   },
   "scripts": {
     "test": "jest",
-    "premake": "jest && rollup --config",
+    "premake": "rollup --config",
     "make": "./util/makeUserScript.sh && eslint --fix battlelog.user.js",
+    "prebuild": "jest",
+    "build": "npm run make",
     "showdep": "./util/getDep.sh > dep.log",
     "depmap": "depcruise src --include-only '^src' --output-type dot | dot -T svg > dependency-graph.svg"
   },
   "jest": {
-    "setupFiles": [
+    "setupFilesAfterEnv": [
       "./setup-jest.js"
     ]
   },

@@ -1,16 +1,16 @@
 export {dosmalldiv, download, table_date_set, banbattletypefunc};
 import {getDateString} from './dateUtil';
 import {queryDuring} from './db';
-import {banpveFlag, banpvpFlag} from './config';
+import {config} from './config';
 
 /* global Chart */
 function banbattletypefunc(){
-    if(banpveFlag){
+    if(config.banpveFlag){
         $('.fyg_lh30:eq(1)').addClass('disabled');
     }else{
         $('.fyg_lh30:eq(1)').removeClass('disabled');
     }
-    if(banpvpFlag){
+    if(config.banpvpFlag){
         $('.fyg_lh30:eq(0)').addClass('disabled');
     }else{
         $('.fyg_lh30:eq(0)').removeClass('disabled');
@@ -99,7 +99,6 @@ async function table_date_set(during,num){
             },
             legend: {
                 display: false,
-
             },
             tooltips: {
                 intersect:false,

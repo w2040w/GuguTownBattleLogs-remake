@@ -1,10 +1,10 @@
 export {progresschange, refreshCountdownTime, read_rank};
 export {setRefreshCountdownTime};
-import {refreshMaxtime} from './config';
+import {config} from './config';
 import {getLocDate} from './dateUtil';
 
 let refreshCountdownTime = 0;
-refreshCountdownTime = refreshMaxtime;
+refreshCountdownTime = config.refreshMaxtime;
 function setRefreshCountdownTime(newtime){
     refreshCountdownTime = newtime;
     return refreshCountdownTime;
@@ -19,7 +19,7 @@ unsafeWindow.changeLog = changeLog;
 let read_rank_rightnow_flag = true;
 let goxing = false;
 async function read_rank(){//主循环
-    if(refreshMaxtime <= 0){
+    if(config.refreshMaxtime <= 0){
         $('#goxtiptext').text('无刷新');
         return;
     }
@@ -27,7 +27,7 @@ async function read_rank(){//主循环
         $('#goxtiptext').text('刷新进度倒计时 '+refreshCountdownTime);
     } else {
         $('#goxtiptext').text('刷新进度倒计时 '+0);
-        setRefreshCountdownTime(refreshMaxtime);
+        setRefreshCountdownTime(config.refreshMaxtime);
         if(goxing) return;
         goxing = true;
         read_rank_rightnow_flag = false;

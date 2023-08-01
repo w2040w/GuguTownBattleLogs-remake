@@ -1,7 +1,7 @@
 export {initgoxpanel};
 import {getLocDate} from './dateUtil';
 import {table_date_set, dosmalldiv, download, banbattletypefunc} from './panelFunc';
-import {refreshMaxtime, checkboxids, banpveFlag, banpvpFlag, config, setflashtime, saveConfig, setBanpvpFlag, setBanpveFlag} from './config';
+import {checkboxids, config, setflashtime, saveConfig} from './config';
 import {setRefreshCountdownTime, progresschange} from './refresh';
 import {autodeletelog, getDaysOfLog, db} from './db';
 import {showMainHost, setMainHost} from './getUserSM';
@@ -12,7 +12,8 @@ let banbattletypediv= document.createElement('div');
 let banpvpcheckbox = document.createElement('input');
 banpvpcheckbox.setAttribute('type','checkbox');
 banpvpcheckbox.addEventListener('change',function(){
-    setBanpvpFlag(banpvpcheckbox.checked);
+    config.banpvpFlag = banpvpcheckbox.checked;
+    saveConfig();
     banbattletypefunc();
 });
 banbattletypediv.appendChild(banpvpcheckbox);
@@ -26,7 +27,8 @@ banbattletypediv.appendChild(banpvpcheckboxtext);
 let banpvecheckbox = document.createElement('input');
 banpvecheckbox.setAttribute('type','checkbox');
 banpvecheckbox.addEventListener('change',function(){
-    setBanpveFlag(banpvecheckbox.checked);
+    config.banpveFlag = banpvecheckbox.checked;
+    saveConfig();
     banbattletypefunc();
 });
 banbattletypediv.appendChild(banpvecheckbox);
@@ -37,10 +39,10 @@ banpvecheckboxtext.setAttribute('style','margin-right:20px;');
 banpvecheckboxtext.setAttribute('class','smalldiv');
 banbattletypediv.appendChild(banpvecheckboxtext);
 
-if(banpvpFlag === true){
+if(config.banpvpFlag === true){
     banpvpcheckbox.checked = true;
 }
-if(banpveFlag === true){
+if(config.banpveFlag === true){
     banpvecheckbox.checked = true;
 }
 let detaillogpanel = document.createElement('div');
@@ -65,7 +67,7 @@ async function initgoxpanel(){
     progresschange.style.setProperty('max-height','70%');
 
     $('#goxtiptext').click(() => {
-        let newtime = parseInt(prompt('新的刷新间隔：(填0则禁止刷新)',refreshMaxtime));
+        let newtime = parseInt(prompt('新的刷新间隔：(填0则禁止刷新)', config.refreshMaxtime));
         if(!isNaN(newtime)){
             setflashtime(newtime);
             setRefreshCountdownTime(newtime);

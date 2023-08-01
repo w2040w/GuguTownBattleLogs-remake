@@ -1,16 +1,13 @@
 export {BattleLog, get_enemylevel, get_user_theard, showMainHost, setMainHost, FM_setValue};
 import {user} from './db';
+import {config, saveConfig} from './config';
 
 /* global $URL */
-let mainHost = '0';
-if(localStorage.getItem('mainHost')!==null){
-    mainHost = localStorage.getItem('mainHost');
-}
 function setMainHost(){
-    let newmainHost = prompt('注意此选项可能消耗主站搜索次数！\n格式如https://bbs.kfmax.com/（填0则不获取对手系数）',mainHost);
+    let newmainHost = prompt('注意此选项可能消耗主站搜索次数！\n格式如https://bbs.kfmax.com/（填0则不获取对手系数）',config.mainHost);
     if(newmainHost!=null&&newmainHost!=''){
-        localStorage.setItem('mainHost',newmainHost );
-        mainHost = newmainHost;
+        config.mainHost = newmainHost;
+        saveConfig();
     }
 }
 
@@ -18,7 +15,7 @@ function show_battle_log(text){
     $('#goxtipbottomtext').text(text);
 }
 function showMainHost(){
-    show_battle_log('主站域名:'+mainHost);
+    show_battle_log('主站域名:'+config.mainHost);
 }
 
 let BattleLog = {};
@@ -70,12 +67,12 @@ function save_enemylevel(name,level){
 
 let get_user_theard_try_num = 0;
 function get_user_theard(name){
-    if(mainHost === '0') return;
+    if(config.mainHost === '0') return;
     let search_name = $URL.encode(name);
     show_battle_log('搜素帖子中');
     GM_xmlhttpRequest({
         method: 'post',
-        url: mainHost+'search.php',
+        url: config.mainHost+'search.php',
         data: 'step=2&method=AND&sch_area=0&s_type=forum&f_fid=all&orderway=lastpost&asc=DESC&keyword=&pwuser='+search_name,
         headers:  {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -133,7 +130,7 @@ function get_user_mainpage(theards,name){
     let theard = theards[0];
     GM_xmlhttpRequest({
         method: 'get',
-        url: mainHost+theard ,
+        url: config.mainHost+theard ,
         headers:  {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
@@ -175,7 +172,7 @@ function get_user_LV(mainpages,name){
     }
     GM_xmlhttpRequest({
         method: 'get',
-        url: mainHost+mainpage ,
+        url: config.mainHost+mainpage ,
         headers:  {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
