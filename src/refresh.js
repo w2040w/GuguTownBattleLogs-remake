@@ -1,6 +1,7 @@
 export {progresschange, refreshCountdownTime, read_rank};
 export {setRefreshCountdownTime};
 import {config} from './config';
+import {postHistory} from './defense';
 import {getLocDate} from './dateUtil';
 
 let refreshCountdownTime = 0;
@@ -34,6 +35,7 @@ async function read_rank(){//主循环
 
         try {
             let postRequestReturn = await postRequest();
+            await postHistory();
             if(!postRequestReturn){
                 goxing = false;
                 return;

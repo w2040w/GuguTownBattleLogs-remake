@@ -1,4 +1,24 @@
 export {weaponMap, armorMap, equipOldMap, haloMap, attrMap};
+export {mapGet, getWeapon, getArmor};
+
+function mapGet(map, oriValue, type, battleLog){
+    let desValue = map.get(oriValue);
+    if(desValue === undefined){
+        battleLog.invalids.push({'type': type, 'oriValue': oriValue});
+        console.log('errMap: {0}, {1}'.format(type, oriValue));
+    }
+    return desValue;
+}
+function sumMap(map1, map2){
+    return new Map([...map1, ...map2]);
+}
+function getWeapon(weapon, battleLog){
+    return mapGet(sumMap(weaponMap,equipOldMap), weapon, 'weapon', battleLog);
+}
+function getArmor(armor, battleLog){
+    return mapGet(sumMap(armorMap,equipOldMap), armor, 'armor', battleLog);
+}
+
 const weaponMap = new Map([
     ['探险者之剑', 'SWORD'],
     ['探险者短弓', 'BOW'],

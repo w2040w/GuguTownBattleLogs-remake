@@ -1,4 +1,5 @@
 export {getLocDate, getDateString};
+export {daymill};
 
 function getLocDate(aparam){//不传参，返回当前时间的Date变量;该方法用来代替new Date
     let thisDate;
@@ -14,4 +15,6 @@ function getLocDate(aparam){//不传参，返回当前时间的Date变量;该方
 function getDateString(thisDate){//将传入的时间戳转换为年月日字符串
     return thisDate.getFullYear() + '/' + (thisDate.getMonth()+1) + '/' + thisDate.getDate();
 }
+
+const daymill = 1000*60*60*24;
 

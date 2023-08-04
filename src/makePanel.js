@@ -219,15 +219,30 @@ async function initgoxpanel(){
         }
     });
 
+    let checkboxText = '<input type="checkbox" id="showdefense" style="width: 20px;">显示防御记录</input>' +
+        '<input type="checkbox" id="showattack" style="width: 20px;">显示进攻记录</input>';
     function setDetaillogpanel(text){
-        detaillogpanel.innerHTML = text;
+        detaillogpanel.innerHTML = checkboxText + text;
         $('.nameandlevel').click(function(){
             $(this).next().toggle(200);
         });
+        initDetailCheck('attack');
+        initDetailCheck('defense');
         $('[data-toggle="tooltip"]').tooltip();
         $('.tc_xs').fadeIn();
         mask.style.display = 'block';
     }
+    function initDetailCheck(prop){
+        $('#show'+prop).prop('checked', true);
+        $('#show'+prop).change(function (){
+            if(this.checked){
+                $('.'+prop).show();
+            } else {
+                $('.'+prop).hide();
+            }
+        });
+    }
+
     $('#daylimit').val(config.queryMaxDay);
     async function userQuery(){
         let searchname = $('#userQueryDialog .username').val();

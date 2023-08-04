@@ -6,48 +6,45 @@ import {config} from './config';
 import {getDateString} from './dateUtil';
 
 async function setDetaillogpanelByday(key){
-    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
-            '<span style="width: 60px">{time}</span><span style="width: 120px;">{name}</span>'+
-            (config.showSM?'<span style="width: 70px;">{xishu}</span>':'')+
-            (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
-            '</h3></div><div style="display:none;">{log}</div></div>';
+    let timetext = '<span style="width: 60px">{time}</span>';
     let items = await queryDay(key);
-    return setDetaillogpanel(divtext, items);
+    return setDetaillogpanel(timetext, items);
 }
 async function setDetaillogpanelByname(enemyname){
-    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
-            '<span style="width: 100px;">{date}</span><span style="width: 120px;">{name}</span>'+
-            (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
-            '</h3></div><div style="display:none;">{log}</div></div>';
+    let timetext = '<span style="width: 100px;">{date}</span>';
     let items = await queryEnemyname(enemyname);
-    return setDetaillogpanel(divtext, items);
+    return setDetaillogpanel(timetext, items);
 }
 async function setDetaillogpanelBynameRegex(enemynameRegex){
-    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
-            '<span style="width: 100px;">{date}</span><span style="width: 120px;">{name}</span>'+
-            (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
-            '</h3></div><div style="display:none;">{log}</div></div>';
+    let timetext = '<span style="width: 100px;">{date}</span>';
     let items = await queryEnemynameRegex(enemynameRegex);
-    return setDetaillogpanel(divtext, items);
+    return setDetaillogpanel(timetext, items);
 }
 async function setDetaillogpanelBychar(charname, maxQueryDay){
-    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
-            '<span style="width: 100px;">{monthday}  {time}</span><span style="width: 120px;">{name}</span>'+
-            (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>{extrainfo}':'')+
-            '</h3></div><div style="display:none;">{log}</div></div>';
+    let timetext = '<span style="width: 100px;">{monthday}  {time}</span>';
     let items = await queryCharname(charname, maxQueryDay);
-    return setDetaillogpanel(divtext, items);
+    return setDetaillogpanel(timetext, items);
 }
 
-async function setDetaillogpanel(divtext, items){
+async function setDetaillogpanel(timetext, items){
     let text = '';
     let len=items.length;
+    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
+        '{time}<span style="width: 120px;">{name}</span>'+
+        (config.showSM?'<span style="width: 70px;">{xishu}</span>':'')+
+        (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>':'');
     if(len === 0){
-        let emptyDivLogData = {thisclass:'',name: '无数据',xishu: '',char:'',charlv:'',log: '',time:'',date:'',monthday:'',extrainfo:''};
-        text+=divtext.format(emptyDivLogData);
+        let emptyDiv = '<div class="detaillogitem"><div class="nameandlevel"><h3>无数据</h3></div></div>';
+        text += emptyDiv;
     }else{
         for(let i=len-1;i>=0;i--){
-            text+= makeDetaillogitem(divtext, items[i]);
+            if(items[i].type === 'defense'){
+                let divtext2 = '{equip}</h3></div></div>';
+                text += makeDetaillogItem(divtext+divtext2, timetext, items[i]);
+            } else {
+                let divtext2 = '{extrainfo}</h3></div><div style="display:none;">{log}</div></div>';
+                text+= makeDetaillogItem(divtext+divtext2, timetext, items[i]);
+            }
         }
     }
     return text;
@@ -59,7 +56,7 @@ function fillzero(numStr, pos){
 function strWhenBool(cond, str){
     return cond?str:'';
 }
-function makeDetaillogitem(divtext, item){
+function makeDetaillogItem(divtext, timetext, item){
     let thisclass = '';
     let date = getDateString(item.time);
     let monthday = fillzero(item.time.getMonth()+1, 2)+'/'+fillzero(item.time.getDate(), 2);
@@ -70,6 +67,11 @@ function makeDetaillogitem(divtext, item){
         thisclass='battlelose';
     }else if(item.isWin === 0){
         thisclass='battletie';
+    }
+    if(item.type === 'defense'){
+        thisclass += ' defense';
+    } else {
+        thisclass += ' attack';
     }
 
     let name = item.enemyname;
@@ -132,7 +134,8 @@ function makeDetaillogitem(divtext, item){
                 + strWhenBool(config.showAttr, attrOri.format(attrStr))
                 + strWhenBool(config.showHalo, spanOri.format(190, haloStr));
     }
-    let divLogData = {thisclass,name,xishu,char,charlv,log: item.log,extrainfo,time,date,monthday};
+    let divLogData = {thisclass,name,xishu,char,charlv,log: item.log, equip: item.equip, extrainfo};
+    divLogData.time = timetext.format({time, date, monthday});
     return divtext.format(divLogData);
 }
 

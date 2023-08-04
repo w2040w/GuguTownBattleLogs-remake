@@ -14,7 +14,7 @@
     "overrides": [
         {
             "files": ["test/**"],
-            "plugins": ["jest", "jest-formatting"],
+            "plugins": ["jest"],
             "extends": ["plugin:jest/recommended"],
             "rules": { "jest/prefer-expect-assertions": "off" }
         }
