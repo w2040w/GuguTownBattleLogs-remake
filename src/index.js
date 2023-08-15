@@ -8,7 +8,6 @@ import {transToDbdata} from './preoutdated/updateOldDb';
 import './confused/dateTimeWrap';
 
 async function fyg_pk_html() {
-    'use strict';
     console.log('fyg_pk_html init');
 
     await transToDbdata();

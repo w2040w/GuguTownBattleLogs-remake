@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         咕咕镇剩余价值收割机
+// @name         咕咕镇剩余价值收割机remake
 // @namespace    https://github.com/GuguTown/GuguTownBattleLogs
-// @version      0.4.0.9
-// @description  斗争者的小助手
-// @author       ikarosf
+// @version      0.5.1
+// @description  斗争者的小助手 此为基于npm+rollup的重构的版本
+// @author       ikarosf w2040w
 // @match        https://www.guguzhen.com/fyg_pk.php
 // @match        https://www.momozhen.com/fyg_pk.php
 // @require      https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js

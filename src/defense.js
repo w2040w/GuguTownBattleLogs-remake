@@ -2,8 +2,12 @@ export {postHistory};
 import {getArmor, getWeapon} from './namemap/oriToDb';
 import {defenseUpdate, queryDuring} from './db';
 import {getLocDate, daymill} from './dateUtil';
+import {config} from './config';
 
 function postHistory(){
+    if(config.logDefense === false){
+        return false;
+    }
     return new Promise((resolve, reject)=>{
         setTimeout(resolve, 10*1000,false);
         GM_xmlhttpRequest({
@@ -80,17 +84,21 @@ async function defenseResolve(battles){
         let order = 0;
         let changeDay = false;
         let len = battles.length;
+        let errlog;
         for(let i = 0; i < len; i++){
             let div = battles[i];
             let battleLog = rowResolve(div);
             let timeinfo = getTimeinfo(div);
             let hour = timeinfo[1];
-            let result = checkAttk(battleLog);
-            if(result !== false){
-                if(lastTime.getHours() !== result.getHours()){
-                    updateOrder();
+            let type = div.getElementsByClassName('col-md-1')[0].innerText;
+            if(type === '攻'){
+                let result = checkAttk(battleLog);
+                if(result !== false){
+                    if(lastTime.getHours() !== result.getHours()){
+                        updateOrder();
+                    }
+                    lastTime = result;
                 }
-                lastTime = result;
                 continue;
             }
 
@@ -113,8 +121,11 @@ async function defenseResolve(battles){
             try{
                 await defenseUpdate(lastTime, battleLog);
             } catch(err){
-                console.log(err);
-                console.log(battleLog);
+                console.error(err);
+                if(typeof errlog !== 'object'){
+                    errlog = {lastTime, queryTime, order, 'enemy':battleLog.enemyname, lastQuery, err};
+                    localStorage.setItem('errlog_Battlelog', JSON.stringify(errlog));
+                }
             }
             if(!(newLastQuery.recordTime instanceof Date)){
                 newLastQuery.recordTime = new Date(lastTime);
@@ -177,7 +188,7 @@ function rowResolve(div){
     let equips = div.getElementsByTagName('img');
     battleLog.armor = getArmor(equips[2].title, battleLog);
     battleLog.weapon = getWeapon(equips[0].title, battleLog);
-    battleLog.etext = div.innerHTML;
+    battleLog.etext = div.outerHTML;
     let equipDiv = div.getElementsByClassName('col-md-3')[1].innerHTML;
     battleLog.equip = equipDiv.replaceAll('div', 'span').replace('alert alert-info', '');
     return battleLog;

@@ -95,9 +95,14 @@ async function initgoxpanel(){
     </div>
     <div>
         <div>
-            <input type="checkbox" id="showSM" style="width: 20px;">记录显示系数</input>
+        查询记录：
+        <input type="button" class="btn" value="根据用户名" id="showlogbyid"></input>
+        <input type="button" class="btn" value="根据角色名" id="showlogbychar"></input>
+    </div>
+        <div>
+            <input type="checkbox" id="logDefense" style="width: 20px;">记录防守</input>
             <span style="width:20px;display: inline-block;"></span>
-            <input type="checkbox" id="showcharlv" style="width: 20px;">记录显示等级</input>
+            <input type="checkbox" id="showDefense" style="width: 20px;">默认显示防守</input>
         </div>
         <div>
             <input type="checkbox" id="showExtrainfo" style="width: 20px;">显示额外信息</input>
@@ -109,11 +114,11 @@ async function initgoxpanel(){
             <input type="checkbox" id="showHalo" style="width: 20px;">光环</input>
         </div>
         <div>
-        查询记录：
-        <input type="button" class="btn" value="根据用户名" id="showlogbyid"></input>
-        <input type="button" class="btn" value="根据角色名" id="showlogbychar"></input>
-    </div>
-    <dialog id="userQueryDialog">
+            <input type="checkbox" id="showSM" style="width: 20px;">记录显示系数</input>
+            <span style="width:20px;display: inline-block;"></span>
+            <input type="checkbox" id="showcharlv" style="width: 20px;">记录显示等级</input>
+        </div>
+            <dialog id="userQueryDialog">
         <form method="dialog">
             <input type="checkbox" id="userRegexQuery" style="width: 20px;">包含该词</input>
             <input autofocus class="username"></input>
@@ -226,14 +231,17 @@ async function initgoxpanel(){
         $('.nameandlevel').click(function(){
             $(this).next().toggle(200);
         });
-        initDetailCheck('attack');
-        initDetailCheck('defense');
+        initDetailCheck('attack', true);
+        initDetailCheck('defense', config.showDefense);
+        if(!config.showDefense){
+            $('.defense').hide();
+        }
         $('[data-toggle="tooltip"]').tooltip();
         $('.tc_xs').fadeIn();
         mask.style.display = 'block';
     }
-    function initDetailCheck(prop){
-        $('#show'+prop).prop('checked', true);
+    function initDetailCheck(prop, value){
+        $('#show'+prop).prop('checked', value);
         $('#show'+prop).change(function (){
             if(this.checked){
                 $('.'+prop).show();
@@ -290,7 +298,6 @@ async function initgoxpanel(){
     $('#importlog').change(async function(){
         if(this.files && this.files[0]){
             let file = this.files[0];
-
             await db.import(file,{overwriteValues: true});
             alert('导入完毕，请刷新');
         }

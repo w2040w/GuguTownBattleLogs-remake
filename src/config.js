@@ -5,9 +5,10 @@ let config = {};
 const defaultConfig = {
     'showSM': true, 'showcharlv': true, 'userRegexQuery': false, 'queryMaxDay': 7,
     'showExtrainfo': true, 'showAttr': true, 'showDamage': true, 'showHalo': true, 'showArmor': true,
-    'banpvpFlag': false, 'banpveFlag': false, 'refreshMaxtime': 30, 'mainHost': '0'
+    'banpvpFlag': false, 'banpveFlag': false, 'refreshMaxtime': 30, 'mainHost': '0',
+    'logDefense': true, 'showDefense': true
 };
-const checkboxids = ['showSM', 'showcharlv', 'userRegexQuery', 'showArmor', 'showDamage', 'showAttr', 'showHalo'];
+const checkboxids = ['showSM', 'showcharlv', 'userRegexQuery', 'showArmor', 'showDamage', 'showAttr', 'showHalo', 'logDefense', 'showDefense'];
 initConfig();
 
 function initConfig(){
