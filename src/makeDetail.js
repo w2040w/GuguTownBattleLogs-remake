@@ -1,5 +1,5 @@
 export {setDetaillogpanelByday, setDetaillogpanelByname, setDetaillogpanelBychar, setDetaillogpanelBynameRegex};
-import {weaponAbbrMap, armorAbbrMap, attrsClassValid, attrName} from './namemap/dbToAbbr';
+import {weaponAbbrMap, armorAbbrMap, attrsClassValid, attrName} from './includes/dbToAbbr';
 import {queryDay, queryCharname, queryEnemyname, queryEnemynameRegex} from './db';
 import {get_enemylevel} from './getUserSM';
 import {config} from './config';

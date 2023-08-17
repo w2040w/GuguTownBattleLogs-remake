@@ -70,6 +70,11 @@ String.prototype.gblen = function() {
     }
     return len;
 };
+Function.prototype.getMultilines = function () {
+    let lines = new String(this);
+    lines = lines.substring(lines.indexOf('/*') + 2,lines.lastIndexOf('*/'));
+    return lines;
+};
 
 function html_decode(str) {
     let s = '';

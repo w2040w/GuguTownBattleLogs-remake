@@ -4,4 +4,4 @@ coverage/*
 
 *.svg
 *.log
-battlelog.user.js
+*.user.js

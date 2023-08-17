@@ -1,4 +1,5 @@
 let replace = require('@rollup/plugin-replace');
+let css = require('rollup-plugin-import-css');
 
 module.exports = {
     input: 'src/index.js',
@@ -7,8 +8,12 @@ module.exports = {
         format: 'es',
     },
     plugins: [
+        css(),
         replace({
-            'process.env.NODE_ENV': 'undefined',
+            values: {
+                'process.env.NODE_ENV': 'undefined',
+            },
+            preventAssignment: true
         })
     ]
 };

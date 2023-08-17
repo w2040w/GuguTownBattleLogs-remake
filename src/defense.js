@@ -1,5 +1,5 @@
 export {postHistory};
-import {getArmor, getWeapon} from './namemap/oriToDb';
+import {getArmor, getWeapon} from './includes/oriToDb';
 import {defenseUpdate, queryDuring} from './db';
 import {getLocDate, daymill} from './dateUtil';
 import {config} from './config';

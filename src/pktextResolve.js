@@ -1,5 +1,5 @@
 export {saveBattle};
-import {getArmor, getWeapon, mapGet, haloMap, attrMap} from './namemap/oriToDb';
+import {getArmor, getWeapon, mapGet, haloMap, attrMap} from './includes/oriToDb';
 import {logupdate} from './db';
 import {get_user_theard} from './getUserSM';
 import {postHistory} from './defense';
