@@ -29,10 +29,6 @@ async function fyg_pk_html() {
         });
     }
 
-    function mycss(){
-        GM_addStyle(css);
-    }
-
     let observerBody1 = new MutationObserver(saveBattle);
 
     let ctx = document.createElement('battleCountChart');
@@ -66,7 +62,7 @@ async function fyg_pk_html() {
     read_rank();
     setInterval(read_rank,'1000');
     observerBody1.observe(document.querySelector('#pk_text'), {characterData: true,childList: true});
-    mycss();
+    GM_addStyle(css);
     await initgoxpanel();
     init_table();
 

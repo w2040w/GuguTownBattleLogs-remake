@@ -101,6 +101,7 @@ function postRequest(){ //获取段位进度、体力
             },
             onerror:function(err){
                 resolve(false);
+                console.error(err);
             },
             ontimeout : function(){
                 resolve(false);

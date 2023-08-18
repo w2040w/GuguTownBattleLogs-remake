@@ -56,7 +56,7 @@ async function saveBattle() { //战斗记录
             let attrClass= angles[i].classList[1];
             battleLog.attrs.push(mapGet(attrMap, attrClass, 'attrClass'+i, battleLog));
         }
-        let iHalo = enemyinfo.querySelectorAll('.fyg_tr')[0].innerText.matchAll(/\|[^\|]+\|/g);
+        let iHalo = enemyinfo.querySelectorAll('.fyg_tr')[0].innerText.matchAll(/\|[^|]+\|/g);
         battleLog.halos = [];
         let haloIndex = 0;
         for(let haloRaw of iHalo){

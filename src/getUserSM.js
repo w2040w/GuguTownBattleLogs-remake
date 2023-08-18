@@ -180,7 +180,7 @@ function get_user_LV(mainpages,name){
             if(res.status === 200){
                 let info = res.responseText;
                 //console.log(info)
-                let afterinfo = info.replace(/\<\/strong\>/g,'');
+                let afterinfo = info.replace(/<\/strong>/g,'');
                 let level = afterinfo.match(/(?<=神秘系数：)\d+/g)[0];
                 save_enemylevel(name,level);//存储对手系数
                 show_battle_log('获取'+name+'系数成功');

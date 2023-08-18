@@ -22,6 +22,7 @@ function postHistory(){
                 resolve(true);
             },
             onerror:function(err){
+                console.error(err);
                 resolve(false);
             },
             ontimeout : function(){
@@ -171,6 +172,7 @@ async function defenseResolve(battles){
 
 function rowResolve(div){
     let battleLog = {};
+    battleLog.invalids = [];
     let result = div.getElementsByClassName('col-md-1')[1].innerText;
     if(result === '胜'){
         battleLog.battleresult = true;

@@ -3,7 +3,7 @@ export {defenseUpdate};
 import {getLocDate, getDateString, daymill} from './dateUtil';
 
 /* global Dexie md5 */
-let user = $('button[class*=\"btn btn-lg\"][onclick*=\"fyg_index.php\"]')[0].innerText;
+let user = $('button[class*="btn btn-lg"][onclick*="fyg_index.php"]')[0].innerText;
 const db = new Dexie('ggzharvester2');
 dbInit();
 function dbInit(){
