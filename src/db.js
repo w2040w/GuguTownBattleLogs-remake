@@ -1,5 +1,5 @@
 export {db, user, queryDay, queryEnemyname, queryEnemynameRegex, queryCharname, logupdate, queryDuring, autodeletelog, getDaysOfLog};
-export {defenseUpdate};
+export {defenseUpdate, deleteDefensePastday};
 import {getLocDate, getDateString, daymill} from './dateUtil';
 
 /* global Dexie md5 */
@@ -11,7 +11,7 @@ function dbInit(){
         battleLog: 'id,time,username'
     });
 }
-unsafeWindow.db = db;
+unsafeWindow.Battlelogdb = db;
 
 async function queryEnemyname(enemyname){
     return await db.battleLog.where({username:user,enemyname:enemyname}).sortBy('time');
@@ -50,7 +50,7 @@ async function logupdate(battleLog){
     await db.battleLog.add({id: thisid, username: user, log: battleLog.etext, isWin: battleLog.battleresult,
         enemyname: battleLog.enemyname, char: battleLog.echar, charlevel: battleLog.echarlv, attrs: battleLog.attrs,
         damages: battleLog.damages, halos: battleLog.halos, weapon: battleLog.weapon, armor: battleLog.armor,
-        invalids: battleLog.invalids, time:now, type: 'attack'});
+        rank: battleLog.rank, invalids: battleLog.invalids, time:now, type: 'attack'});
 }
 async function defenseUpdate(time, battleLog){
     let thisid = md5(battleLog.etext+time.getTime());
@@ -74,3 +74,8 @@ async function getDaysOfLog(){
     return Array.from(result);
 }
 
+async function deleteDefensePastday(){
+    let now = getLocDate();
+    let below = new Date(now - daymill);
+    await db.battleLog.where('time').between(below, now).and(item => item.username === user && item.type === 'defense').delete();
+}

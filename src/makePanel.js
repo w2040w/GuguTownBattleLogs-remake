@@ -3,7 +3,7 @@ import {getLocDate} from './dateUtil';
 import {table_date_set, dosmalldiv, download, banbattletypefunc} from './panelFunc';
 import {checkboxids, config, setflashtime, saveConfig} from './config';
 import {setRefreshCountdownTime, progresschange} from './refresh';
-import {autodeletelog, getDaysOfLog, db} from './db';
+import {autodeletelog, getDaysOfLog, deleteDefensePastday, db} from './db';
 import {showMainHost, setMainHost} from './getUserSM';
 import {setDetaillogpanelByday, setDetaillogpanelByname,setDetaillogpanelBychar, setDetaillogpanelBynameRegex} from './makeDetail';
 
@@ -88,6 +88,9 @@ async function initgoxpanel(){
         }
         $('#goxpanelExtend').slideToggle(200);
     });
+    function makeCheckbox(id, desc){
+        return `<span class="selectLog"><input type="checkbox" id="${id}" style="width: 20px;">${desc}</input></span>`;
+    }
     goxpanelExtend.innerHTML =`<div>
         <input  value="30" id="TopDuring" style="width: 40px;">日内 遇到最多TOP</input>
         <input  value="15" id="TopNum" style="width: 40px;margin-right:15px;"></input>
@@ -100,24 +103,10 @@ async function initgoxpanel(){
         <input type="button" class="btn" value="根据角色名" id="showlogbychar"></input>
     </div>
         <div>
-            <input type="checkbox" id="logDefense" style="width: 20px;">记录防守</input>
-            <span style="width:20px;display: inline-block;"></span>
-            <input type="checkbox" id="showDefense" style="width: 20px;">默认显示防守</input>
+            ${makeCheckbox('logDefense', '记录防守')}
+            ${makeCheckbox('showDefense', '默认显示防守')}
         </div>
-        <div>
-            <input type="checkbox" id="showExtrainfo" style="width: 20px;">显示额外信息</input>
-        </div>
-        <div class="hidden" id="extrainfo">
-            <input type="checkbox" id="showArmor" style="width: 20px;">防具</input>
-            <input type="checkbox" id="showDamage" style="width: 20px;">伤害比例</input>
-            <input type="checkbox" id="showAttr" style="width: 20px;">加点</input>
-            <input type="checkbox" id="showHalo" style="width: 20px;">光环</input>
-        </div>
-        <div>
-            <input type="checkbox" id="showSM" style="width: 20px;">记录显示系数</input>
-            <span style="width:20px;display: inline-block;"></span>
-            <input type="checkbox" id="showcharlv" style="width: 20px;">记录显示等级</input>
-        </div>
+        <input type="button" class="btn" value="设置" id="showConfig"></input>
             <dialog id="userQueryDialog">
         <form method="dialog">
             <input type="checkbox" id="userRegexQuery" style="width: 20px;">包含该词</input>
@@ -138,12 +127,55 @@ async function initgoxpanel(){
             </div>
         </form>
     </dialog>
+    <dialog id="configDialog">
+        <form method="dialog">
+            <div>
+                <div>
+                ${makeCheckbox('showSM', '记录显示系数')}
+                ${makeCheckbox('showcharlv', '记录显示等级')}
+                ${makeCheckbox('showRank', '记录显示段位')}
+                </div>
+                <div>
+                </div>
+                <div>
+                    <input type="checkbox" id="showExtrainfo" style="width: 20px;">显示额外信息</input>
+                </div>
+                <div class="hidden" id="extrainfo">
+                    <input type="checkbox" id="showArmor" style="width: 20px;">防具</input>
+                    <input type="checkbox" id="showDamage" style="width: 20px;">伤害比例</input>
+                    <input type="checkbox" id="showAttr" style="width: 20px;">加点</input>
+                    <input type="checkbox" id="showHalo" style="width: 20px;">光环</input>
+                </div>
+                <button class="cancelBtn">Cancel</button>
+            </div>
+        </form>
+    </dialog>
 </div>
+    
 <div>
     <input type="button" class="btn" value="导出历史" id="exportlog"></input>
     <span style="width:20px;display: inline-block;"></span>
-        导入历史：<input type="file" class="btn" value="导入历史" id="importlog" accept=".ggzjson" style="width: 90px;height:32px;display: inline-block;"></input>
+    <input type="button" class="btn" value="导入历史" id="importlog"></input>
     </div>
+    <dialog id="importDialog">
+        <form method="dialog">
+            lastQuery(如果未开启记录防御功能，可保持为空):</br><input autofocus class="lastQuery" style="width:600px;margin-right:15px;"></input></br>
+        导入历史：<input type="file" class="btn log" value="导入历史" accept=".ggzjson" style="width: 90px;height:32px;display: inline-block;"></input>
+            <div>
+                <button class="cancelBtn">Cancel</button>
+                <button class="confirmBtn">Confirm</button>
+            </div>
+        </form>
+    </dialog>
+    <dialog id="exportDialog">
+        <form method="dialog">
+            lastQuery(如果开启了记录防御功能，请复制以下语句):</br><input autofocus class="lastQuery" style="width:600px;margin-right:15px;"></input>
+            <div>
+                <button class="cancelBtn">Cancel</button>
+                <button class="confirmBtn">Copy</button>
+            </div>
+        </form>
+    </dialog>
     <div>
         <input type="button" class="btn btn-danger" value="手动删除记录" id="deletelog"></input>
     </div>
@@ -181,7 +213,7 @@ async function initgoxpanel(){
         active:await getDaysOfLog(),
         success: async function (res) {
             let text = await setDetaillogpanelByday(res);
-            setDetaillogpanel(text);
+            setDetaillogpanel(text, res.slice(5));
         }
     });
 
@@ -214,25 +246,38 @@ async function initgoxpanel(){
         initCheckbox(checkboxid);
     }
 
-    $('#deletelog').click(function(){
+    $('#deletelog').click(async function(){
         let dayss = parseInt(prompt('将多少天以前的战斗记录清除？\n警告：删除的记录无法恢复，假如填0将删除所有记录'));
         if(!isNaN(dayss)&&dayss>=0){
-            autodeletelog(dayss);
+            await autodeletelog(dayss);
             alert('清除完成，请刷新');
         }else{
             alert('输入错误或取消操作');
         }
     });
 
-    let checkboxText = '<input type="checkbox" id="showdefense" style="width: 20px;">显示防御记录</input>' +
-        '<input type="checkbox" id="showattack" style="width: 20px;">显示进攻记录</input>';
-    function setDetaillogpanel(text){
-        detaillogpanel.innerHTML = checkboxText + text;
+    let checkboxText = `<div>${makeCheckbox('showdefense', '显示防御记录')}
+        ${makeCheckbox('showattack', '显示进攻记录')}
+        ${makeCheckbox('hidename', '隐藏对手名')}`;
+    function setDetaillogpanel(text, date = ''){
+        let dateEle = '';
+        if(date !== ''){
+            dateEle = `<strong style='color:#03a2b6; margin-left:20px; font-size:15px;'>${date}</strong>`;
+        }
+        detaillogpanel.innerHTML = checkboxText+ dateEle + '</dlv>' + text;
         $('.nameandlevel').click(function(){
             $(this).next().toggle(200);
         });
         initDetailCheck('attack', true);
         initDetailCheck('defense', config.showDefense);
+        $('#hidename').prop('checked', false);
+        $('#hidename').change(function (){
+            if(this.checked){
+                $('.enemyname').addClass('namecover');
+            } else {
+                $('.enemyname').removeClass('namecover');
+            }
+        });
         if(!config.showDefense){
             $('.defense').hide();
         }
@@ -289,19 +334,56 @@ async function initgoxpanel(){
     }
     initQueryDialog('userQueryDialog', 'showlogbyid', userQuery);
     initQueryDialog('charQueryDialog', 'showlogbychar', charQuery);
+    initQueryDialog('importDialog', 'importlog', importLog);
+    initQueryDialog('exportDialog', 'exportlog', exportLog);
+    const configDialog = document.getElementById('configDialog');
+    initQueryDialog('configDialog', 'showConfig', configDialog.close);
 
     $('#exportlog').click(async function(){
+        $('#exportDialog .lastQuery').attr('value', localStorage.getItem('lastQuery_Battlelog'));
         let dbblob = await db.export();
         download(dbblob,'韭菜收割机历史数据.ggzjson');
     });
-
-    $('#importlog').change(async function(){
-        if(this.files && this.files[0]){
-            let file = this.files[0];
+    async function exportLog(){
+        let lastQueryRaw = $('#exportDialog .lastQuery').val();
+        navigator.clipboard.writeText(lastQueryRaw);
+        alert('lastQuery信息已存入剪切板');
+    }
+    async function importLog(){
+        let lastQueryRaw = $('#importDialog .lastQuery').val();
+        let fileInput = $('#importDialog .log')[0];
+        if(lastQueryRaw !== '' && fileInput.files && fileInput.files[0]){
+            if(await dealLastQuery(lastQueryRaw) === false){
+                return;
+            }
+        }
+        if(fileInput.files && fileInput.files[0]){
+            let file = fileInput.files[0];
             await db.import(file,{overwriteValues: true});
             alert('导入完毕，请刷新');
         }
-    });
+    }
+    async function dealLastQuery(lastQueryRaw){
+        let lastQuery;
+        try{
+            lastQuery = JSON.parse(lastQueryRaw);
+        } catch (err){
+            alert(err);
+            return false;
+        }
+        if(typeof lastQuery.queryTime !== 'string' || typeof lastQuery.recordTime !== 'string' || typeof lastQuery.order !== 'number'){
+            alert('lastQuery项错误');
+            return false;
+        }
+        lastQuery.queryTime = new Date(lastQuery.queryTime);
+        lastQuery.recordTime = new Date(lastQuery.recordTime);
+        if(isNaN(lastQuery.queryTime.valueOf()) || isNaN(lastQuery.recordTime.valueOf())){
+            alert('lastQuery时间错误');
+            return false;
+        }
+        await deleteDefensePastday();
+        localStorage.setItem('lastQuery_Battlelog', lastQueryRaw);
+    }
 
     if(localStorage.getItem('smalldiv')=='true'){
         dosmalldiv();

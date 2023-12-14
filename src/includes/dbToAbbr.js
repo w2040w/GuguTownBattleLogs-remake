@@ -4,7 +4,7 @@ const weaponAbbrMap = new Map([
     ['SWORD', '剑'],['BOW', '短弓'],['STAFF', '短杖'],
     ['BLADE', '刃'],['ASSBOW', '弓'],['DAGGER', '匕首'],
     ['WAND', '光辉'],['SHIELD', '盾剑'],['CLAYMORE', '重剑'],
-    ['SPEAR', '长枪'],['COLORFUL', '长剑']
+    ['SPEAR', '长枪'],['COLORFUL', '长剑'],['LIMPIDWAND', '长杖']
 ]);
 
 const armorAbbrMap = new Map([

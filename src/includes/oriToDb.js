@@ -31,6 +31,7 @@ const weaponMap = new Map([
     ['陨铁重剑', 'CLAYMORE'],
     ['饮血魔剑', 'SPEAR'],
     ['彩金长剑', 'COLORFUL'],
+    ['清澄长杖', 'LIMPIDWAND'],
 ]);
 
 const armorMap = new Map([

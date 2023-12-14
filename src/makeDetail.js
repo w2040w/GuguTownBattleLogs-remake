@@ -29,8 +29,9 @@ async function setDetaillogpanelBychar(charname, maxQueryDay){
 async function setDetaillogpanel(timetext, items){
     let text = '';
     let len=items.length;
-    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>'+
-        '{time}<span style="width: 120px;">{name}</span>'+
+    let divtext = '<div class="detaillogitem {thisclass}"><div class="nameandlevel"><h3>{time}'+
+        (config.showRank?'<span style="width:45px;" class="fyg_colpz05">{rank}</span>':'')+
+        '<span style="width: 120px;"><span class="enemyname">{name}</span></span>'+
         (config.showSM?'<span style="width: 70px;">{xishu}</span>':'')+
         (config.showcharlv?'<span style="width: 40px;">{char}</span><span style="width: 80px;">{charlv}</span>':'');
     if(len === 0){
@@ -81,6 +82,10 @@ function makeDetaillogItem(divtext, timetext, item){
     }
     let char = item.char;
     let charlv = 'LV:'+item.charlevel;
+    let rank = item.rank;
+    if(typeof item.rank !== 'string'){
+        rank = '';
+    }
 
     let extrainfo = '';
     if(Array.isArray(item.attrs) && config.showExtrainfo){
@@ -133,8 +138,9 @@ function makeDetaillogItem(divtext, timetext, item){
                 + strWhenBool(config.showDamage, spanOri.format(110, damagePerStr))
                 + strWhenBool(config.showAttr, attrOri.format(attrStr))
                 + strWhenBool(config.showHalo, spanOri.format(190, haloStr));
+
     }
-    let divLogData = {thisclass,name,xishu,char,charlv,log: item.log, equip: item.equip, extrainfo};
+    let divLogData = {thisclass,name,xishu,char,charlv,rank,log: item.log, equip: item.equip, extrainfo};
     divLogData.time = timetext.format({time, date, monthday});
     return divtext.format(divLogData);
 }

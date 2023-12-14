@@ -39,10 +39,18 @@ async function saveBattle() { //战斗记录
     battleLog.invalids = [];
 
     if(battleLog.echar !== '野怪'){
-        let weaponName = enemyinfo.querySelectorAll('.fyg_mp3')[0].dataset.originalTitle;
-        battleLog.weapon = getWeapon(weaponName);
-        let armorName = enemyinfo.querySelectorAll('.fyg_mp3')[2].dataset.originalTitle;
-        battleLog.armor = getArmor(armorName);
+        battleLog.rank = $('#pklist .fyg_colpz05')[0].innerHTML;
+        let equipEle = enemyinfo.querySelectorAll('.fyg_mp3');
+        let weaponName = equipEle[0].getAttribute('unique');
+        if(typeof weaponName !== 'string'){
+            weaponName = equipEle[0].dataset.originalTitle;
+        }
+        battleLog.weapon = getWeapon(weaponName, battleLog);
+        let armorName = equipEle[2].getAttribute('unique');
+        if(typeof armorName !== 'string'){
+            armorName = equipEle[2].dataset.originalTitle;
+        }
+        battleLog.armor = getArmor(armorName, battleLog);
 
         let physical = pkTextDiv.querySelectorAll('div.hl-primary > .col-md-2')[3].innerText;
         let magical = pkTextDiv.querySelectorAll('div.hl-primary > .col-md-2')[4].innerText;

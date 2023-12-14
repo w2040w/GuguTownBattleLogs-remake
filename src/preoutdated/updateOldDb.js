@@ -1,6 +1,7 @@
 export {transToDbdata};
 import {BattleLog, FM_setValue} from '../getUserSM';
 import {db} from '../db';
+import {getLocDate} from '../dateUtil';
 
 async function transToDbdata(){
     for (let i in BattleLog){

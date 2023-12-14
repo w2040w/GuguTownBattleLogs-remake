@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         咕咕镇剩余价值收割机remake
 // @namespace    https://github.com/GuguTown/GuguTownBattleLogs
-// @version      0.5.3
+// @version      0.6.0-alpha.3
 // @description  斗争者的小助手 此为基于npm+rollup的重构的版本
 // @author       ikarosf w2040w
 // @match        https://www.guguzhen.com/fyg_pk.php
@@ -28,6 +28,9 @@
 // @grant        GM_getValue
 // @grant        GM_addStyle
 // @grant        GM_listValues
+// @downloadURL  https://github.com/w2040w/GuguTownBattleLogs/releases/download/fee/GuguTownBattleLogs.remake.dev.user.js
+// @updateURL    https://github.com/w2040w/GuguTownBattleLogs/releases/download/fee/GuguTownBattleLogs.remake.dev.user.js
+//
 // ==/UserScript==
 
 (function () {
