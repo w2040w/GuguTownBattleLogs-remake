@@ -31,30 +31,6 @@ async function fyg_pk_html() {
 
     let observerBody1 = new MutationObserver(saveBattle);
 
-    let ctx = document.createElement('battleCountChart');
-    function init_table(){
-        let table_html = '<canvas id="battleCountChart"></canvas>';
-        let obj = document.createElement('div');
-        obj.innerHTML = table_html;
-        obj.setAttribute('id','chartParent');
-        $('body')[0].appendChild(obj);
-        chartssize(obj,ctx);
-    }
-    //参数container为图表盒子节点.charts为图表节点
-    function chartssize (container,charts) {
-        function getStyle(el, name) {
-            if (window.getComputedStyle) {
-                return window.getComputedStyle(el, null);
-            } else {
-                return el.currentStyle;
-            }
-        }
-        let wi = getStyle(container, 'width').width;
-        let hi = getStyle(container, 'height').height;
-        charts.style.width = wi;
-        charts.style.height = hi;
-    }
-
     //——————————————————mainfun————————————
     unsafeWindow.get_user_theard = get_user_theard;
     unsafeWindow.pklist = mypklist;
@@ -64,7 +40,6 @@ async function fyg_pk_html() {
     observerBody1.observe(document.querySelector('#pk_text'), {characterData: true,childList: true});
     GM_addStyle(css);
     await initgoxpanel();
-    init_table();
 
     //autodeletelog(30);
 }

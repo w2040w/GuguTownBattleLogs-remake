@@ -5,6 +5,8 @@ import {get_enemylevel} from './getUserSM';
 import {config} from './config';
 import {getDateString} from './dateUtil';
 
+const halosValid = ['FEI', 'BO', 'JU', 'HONG', 'JUE', 'HOU', 'DUNH', 'ZI', 'REN'];
+
 async function setDetaillogpanelByday(key){
     let timetext = '<span style="width: 60px">{time}</span>';
     let items = await queryDay(key);
@@ -69,10 +71,10 @@ function makeDetaillogItem(divtext, timetext, item){
     }else if(item.isWin === 0){
         thisclass='battletie';
     }
-    if(item.type === 'defense'){
-        thisclass += ' defense';
-    } else {
+    if(typeof item.type !== 'string'){
         thisclass += ' attack';
+    } else {
+        thisclass += ` ${item.type}`;
     }
 
     let name = item.enemyname;
@@ -122,7 +124,6 @@ function makeDetaillogItem(divtext, timetext, item){
             }
         }
 
-        const halosValid = ['FEI', 'BO', 'JU', 'HONG', 'JUE', 'HOU', 'DUNH', 'ZI'];
         let halos = item.halos;
         let haloStr = '|';
         for(let i = halos.length-1; i >= 0; i--){

@@ -1,5 +1,6 @@
 export {saveBattle};
 import {getArmor, getWeapon, mapGet, haloMap, attrMap} from './includes/oriToDb';
+import {config} from './config';
 import {logupdate} from './db';
 import {get_user_theard} from './getUserSM';
 import {postHistory} from './defense';
@@ -36,10 +37,11 @@ async function saveBattle() { //战斗记录
         battleLog.echarlv = einfolist[3];
     }
 
+    battleLog.rank = $('#pklist .fyg_colpz05')[0].innerHTML;
     battleLog.invalids = [];
 
     if(battleLog.echar !== '野怪'){
-        battleLog.rank = $('#pklist .fyg_colpz05')[0].innerHTML;
+        battleLog.type = 'attack';
         let equipEle = enemyinfo.querySelectorAll('.fyg_mp3');
         let weaponName = equipEle[0].getAttribute('unique');
         if(typeof weaponName !== 'string'){
@@ -72,6 +74,10 @@ async function saveBattle() { //战斗记录
             battleLog.halos.push(mapGet(haloMap, haloName, 'halo'+haloIndex, battleLog));
             haloIndex++;
         }
+    } else {
+        battleLog.type = 'wild';
+    }
+    if(config.logWild || battleLog.echar !== '野怪'){
         await logupdate(battleLog);
         await postHistory();
     }
