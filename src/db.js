@@ -50,7 +50,7 @@ async function logupdate(battleLog){
     await db.battleLog.add({id: thisid, username: user, log: battleLog.etext, isWin: battleLog.battleresult,
         enemyname: battleLog.enemyname, char: battleLog.echar, charlevel: battleLog.echarlv, attrs: battleLog.attrs,
         damages: battleLog.damages, halos: battleLog.halos, weapon: battleLog.weapon, armor: battleLog.armor,
-        rank: battleLog.rank, invalids: battleLog.invalids, time:now, type: 'attack'});
+        rank: battleLog.rank, invalids: battleLog.invalids, time:now, type: battleLog.type});
 }
 async function defenseUpdate(time, battleLog){
     let thisid = md5(battleLog.etext+time.getTime());

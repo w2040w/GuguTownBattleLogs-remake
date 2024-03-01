@@ -1,7 +1,7 @@
 {
-  "name": "rollup-demo",
+  "name": "GuguTownBattleLogs-remake-maker",
   "version": "0.1.0",
-  "description": "test",
+  "description": "greaskmonkey script maker for GGTBL",
   "private": true,
   "devDependencies": {
     "@babel/preset-env": "^7.22.9",
